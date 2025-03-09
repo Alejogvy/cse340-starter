@@ -1,6 +1,199 @@
-/******* Change Box Model ***************/
-*,
-*:before,
-*:after {
+/* Mobile layout */
+* {
   box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  line-height: 1.6;
+  color: #333;
+  max-width: 100%;
+  overflow-x: hidden;
+}
+
+/* Header */
+#top-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+}
+
+.siteName a {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #000;
+  text-decoration: none;
+}
+
+#tools a {
+  color: #000;
+  text-decoration: none;
+}
+
+/* Navigation */
+nav {
+  background-color: #1d1e40;
+  color: white;
+}
+
+nav ul {
+  display: flex;
+  list-style: none;
+  padding: 0.5rem;
+}
+
+nav ul li {
+  margin-right: 1rem;
+  cursor: pointer;
+}
+
+nav ul li:hover {
+  color: #00bcd4;
+}
+
+/* Main content */
+main {
+  padding: 1rem;
+}
+
+h1 {
+  margin-bottom: 1rem;
+}
+
+/* Hero section */
+.hero {
+  position: relative;
+  margin-bottom: 2rem;
+}
+
+.hero-content {
+  position: relative;
+}
+
+.car-details {
+  position: absolute;
+  top: 0;
+  left: 0;
+  background-color: rgba(255, 255, 255, 0.7);
+  padding: 1rem;
+  max-width: 50%;
+  z-index: 1;
+}
+
+.hero-content img {
+  width: 100%;
+  height: auto;
+  display: block;
+}
+
+.features {
+  list-style: none;
+  margin: 1rem 0;
+  color: #00bcd4;
+}
+
+.action-button {
+  background-color: #00bcd4;
+  border: none;
+  color: white;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: bold;
+}
+
+/* Upgrades section */
+.upgrades {
+  margin-bottom: 2rem;
+}
+
+.upgrade-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 1rem;
+}
+
+.upgrade-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.upgrade-item img {
+  width: 100%;
+  max-width: 100px;
+  height: auto;
+  background-color: #00bcd4;
+  padding: 0.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.upgrade-item a {
+  color: #00f;
+  text-decoration: none;
+}
+
+/* Reviews section */
+.reviews {
+  margin-bottom: 2rem;
+}
+
+.review-list {
+  list-style: disc;
+  margin-left: 1.5rem;
+}
+
+.review-list li {
+  margin-bottom: 0.5rem;
+}
+
+/* Footer */
+footer {
+  background-color: #1d1e40;
+  color: white;
+  text-align: center;
+  padding: 1rem;
+}
+
+/* Desktop layout */
+@media screen and (min-width: 768px) {
+  body {
+    max-width: 1000px;
+    margin: 0 auto;
+    border: 5px solid;
+    border-image: repeating-linear-gradient(45deg, black, black 10px, #00bcd4 10px, #00bcd4 20px) 10;
+  }
+
+  main {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    grid-template-areas:
+      "heading heading"
+      "hero reviews"
+      "upgrades reviews";
+    gap: 2rem;
+  }
+
+  h1 {
+    grid-area: heading;
+  }
+
+  .hero {
+    grid-area: hero;
+  }
+
+  .reviews {
+    grid-area: reviews;
+  }
+
+  .upgrades {
+    grid-area: upgrades;
+  }
+
+  .upgrade-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
 }
