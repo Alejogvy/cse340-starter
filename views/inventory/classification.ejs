@@ -1,13 +1,25 @@
-    <!-- Content Heading -->
-<% if (title) { %>
-    <h1><%= title %></h1>
-  <% } else { %>
-    <% res.redirect('/') %>
-  <% } %>
-  
-  <!-- Message Block -->
-  <%# messages() %>
-  
-  <!-- Inventory Items Display -->
-  <%- grid %>
-  
+<%- include('../partials/head', { title }) %>
+
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/navigation', { nav }) %>
+
+  <main class="inventory-container">
+    <% if (title) { %>
+      <h1 class="inventory-title"><%= title %></h1>
+    <% } else { %>
+      <% res.redirect('/') %>
+    <% } %>
+    
+    <!-- Message Block -->
+    <%# messages() %>
+    
+    <!-- Inventory Items Display -->
+    <div class="inventory-grid">
+      <%- grid %>
+    </div>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

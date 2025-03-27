@@ -1,0 +1,41 @@
+<%- include('../partials/head', {title}) %>
+<body>
+  <%- include('../partials/navigation', {nav}) %>
+
+  <main class="container">
+    <% if (vehicle) { %>
+      <h1><%= vehicle.inv_year %> <%= vehicle.inv_make %> <%= vehicle.inv_model %></h1>
+      
+      <img src="<%= vehicle.inv_image %>" alt="<%= vehicle.inv_make %> <%= vehicle.inv_model %>">
+      
+      <div class="vehicle-details">
+        <p>
+          <strong>Price:</strong> 
+          <span class="price">$<%= vehicle.inv_price.toLocaleString() %></span>
+        </p>
+        
+        <p>
+          <strong>Color:</strong> 
+          <%= vehicle.inv_color %>
+        </p>
+        
+        <p>
+          <strong>Mileage:</strong> 
+          <%= vehicle.inv_miles.toLocaleString() %> miles
+        </p>
+        
+        <p>
+          <strong>Description:</strong>
+        </p>
+        <p class="description">
+          <%= vehicle.inv_description %>
+        </p>
+      </div>
+    <% } else { %>
+      <p class="error">Vehicle not found</p>
+    <% } %>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

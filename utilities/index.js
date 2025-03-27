@@ -1,60 +1,124 @@
-const invModel = require("../models/inventory-model")
+const invModel = require("../models/inventory-model");
 const Util = {}
+const getImageName = (path) => path.split('/').pop();
 
-/* ************************
- * Constructs the nav HTML unordered list
- ************************** */
-Util.getNav = async function (req, res, next) {
-  let data = await invModel.getClassifications()
-  let list = "<ul>"
-  list += '<li><a href="/" title="Home page">Home</a></li>'
-  data.rows.forEach((row) => {
-    list += "<li>"
-    list +=
-      '<a href="/inv/type/' +
-      row.classification_id +
-      '" title="See our inventory of ' +
-      row.classification_name +
-      ' vehicles">' +
-      row.classification_name +
-      "</a>"
-    list += "</li>"
-  })
-  list += "</ul>"
-  return list
-}
+/******************************************
+ * Builds the vehicle detail HTML structure
+ *****************************************/
+Util.buildVehicleDetailHTML = function (vehicle) {
+  const imageName = getImageName(vehicle.inv_image);
+  const price = new Intl.NumberFormat('en-US', {
+    style: 'currency',
+    currency: 'USD'
+  }).format(vehicle.inv_price);
 
-module.exports = Util
+  const miles = new Intl.NumberFormat('en-US').format(vehicle.inv_miles);
 
-/* **************************************
-* Build the classification view HTML
-* ************************************ */
-Util.buildClassificationGrid = async function(data){
-    let grid
-    if(data.length > 0){
-      grid = '<ul id="inv-display">'
-      data.forEach(vehicle => { 
-        grid += '<li>'
-        grid +=  '<a href="../../inv/detail/'+ vehicle.inv_id 
-        + '" title="View ' + vehicle.inv_make + ' '+ vehicle.inv_model 
-        + 'details"><img src="' + vehicle.inv_thumbnail 
-        +'" alt="Image of '+ vehicle.inv_make + ' ' + vehicle.inv_model 
-        +' on CSE Motors" /></a>'
-        grid += '<div class="namePrice">'
-        grid += '<hr />'
-        grid += '<h2>'
-        grid += '<a href="../../inv/detail/' + vehicle.inv_id +'" title="View ' 
-        + vehicle.inv_make + ' ' + vehicle.inv_model + ' details">' 
-        + vehicle.inv_make + ' ' + vehicle.inv_model + '</a>'
-        grid += '</h2>'
-        grid += '<span>$' 
-        + new Intl.NumberFormat('en-US').format(vehicle.inv_price) + '</span>'
-        grid += '</div>'
-        grid += '</li>'
-      })
-      grid += '</ul>'
-    } else { 
-      grid += '<p class="notice">Sorry, no matching vehicles could be found.</p>'
+  return `
+    <div class="vehicle-detail">
+        <img src="/images/vehicles/${imageName}" 
+             alt="${vehicle.inv_make} ${vehicle.inv_model}">
+    <div class="vehicle-detail">
+      <img src="/images/vehicles/${vehicle.inv_image}" 
+           alt="${vehicle.inv_make} ${vehicle.inv_model}" 
+           class="vehicle-image">
+      <div class="vehicle-info">
+        <h2>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h2>
+        <div class="vehicle-specs">
+          <p><span class="label">Price:</span> <span class="price">${price}</span></p>
+          <p><span class="label">Miles:</span> <span class="miles">${miles}</span></p>
+          <p><span class="label">Color:</span> ${vehicle.inv_color}</p>
+        </div>
+        <div class="vehicle-description">
+          ${vehicle.inv_description}
+        </div>
+      </div>
+    </div>
+  `;
+};
+
+/************************************************
+ * Constructs the navigation HTML unordered list
+ **********************************************/
+Util.getNav = async function () {
+  try {
+    const { rows } = await invModel.getClassifications();
+    
+    if (!rows || rows.length === 0) {
+      console.warn("No classifications found in database");
+      return `
+        <ul class="nav-list">
+          <li class="nav-item">
+            <a href="/" title="Home page" class="nav-link">Home</a>
+          </li>
+        </ul>`;
     }
-    return grid
+
+    let navHTML = `
+      <ul class="nav-list">
+        <li class="nav-item">
+          <a href="/" title="Home page" class="nav-link">Home</a>
+        </li>`;
+
+    rows.forEach((row) => {
+      navHTML += `
+        <li class="nav-item">
+          <a href="/inv/type/${row.classification_id}" 
+             title="Browse our ${row.classification_name} vehicles"
+             class="nav-link">
+            ${row.classification_name}
+          </a>
+        </li>`;
+    });
+
+    navHTML += `</ul>`;
+    return navHTML;
+  } catch (error) {
+    console.error("Navigation system error:", error);
+    return `
+      <ul class="nav-list error">
+        <li class="nav-item">
+          <a href="/" title="Home page" class="nav-link">Home</a>
+        </li>
+        <li class="nav-item error">
+          Navigation temporarily unavailable
+        </li>
+      </ul>`;
   }
+};
+
+/*************************************
+ * Builds the classification grid HTML
+ *************************************/
+Util.buildClassificationGrid = function (data) {
+  const vehicles = Array.isArray(data) ? data : (data.rows || []);
+  
+  if (vehicles.length > 0) {
+    let grid = '<ul id="inv-display">';
+    
+    vehicles.forEach((vehicle) => {
+      grid += `
+        <li>
+          <a href="/inv/detail/${vehicle.inv_id}" title="View ${vehicle.inv_make} ${vehicle.inv_model} details">
+            <img src="${vehicle.inv_thumbnail}" alt="Image of ${vehicle.inv_make} ${vehicle.inv_model}" />
+          </a>
+          <div class="namePrice">
+            <hr />
+            <h2>
+              <a href="/inv/detail/${vehicle.inv_id}" title="View ${vehicle.inv_make} ${vehicle.inv_model} details">
+                ${vehicle.inv_make} ${vehicle.inv_model}
+              </a>
+            </h2>
+            <span>${vehicle.inv_price.toLocaleString('en-US', {style: 'currency', currency: 'USD'})}</span>
+          </div>
+        </li>`;
+    });
+    
+    grid += '</ul>';
+    return grid;
+  } else {
+    return '<p class="notice">Sorry, no matching vehicles could be found.</p>';
+  }
+};
+
+module.exports = Util;
