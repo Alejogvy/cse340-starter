@@ -1,11 +1,11 @@
-const db = require("../database/");
+const pool = require("../database/");
 
 /* ***************************
  *  Get all classification data
  * ************************** */
 async function getClassifications() {
   try {
-    return await db.query(
+    return await pool.query(
       "SELECT * FROM public.classification ORDER BY classification_name"
     );
   } catch (error) {
@@ -21,7 +21,7 @@ async function getInventoryByClassificationId(classification_id) {
   try {
     console.log(`Looking for inventory to classification_id: ${classification_id}`);
     
-    const data = await db.query(
+    const data = await pool.query(
       `SELECT i.*, c.classification_name 
        FROM inventory AS i
        JOIN classification AS c 
@@ -45,7 +45,7 @@ async function getInventoryByClassificationId(classification_id) {
  * ************************** */
 async function getVehicleById(inv_id) {
   try {
-    const { rows } = await db.query(
+    const { rows } = await pool.query(
       `SELECT * FROM inventory 
        WHERE inv_id = $1`,
       [inv_id]

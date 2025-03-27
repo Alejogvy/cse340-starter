@@ -1,38 +1,37 @@
-const { Pool } = require("pg");
-require("dotenv").config();
+const { Pool } = require("pg")
+require("dotenv").config()
+/* ***************
+ * Connection Pool
+ * SSL Object needed for local testing of app
+ * But will cause problems in production environment
+ * If - else will make determination which to use
+ * *************** */
+let pool
+if (process.env.NODE_ENV == "development") {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+    ssl: {
+      rejectUnauthorized: false,
+    },
+})
 
-// Configuración mejorada del pool de conexiones
-const pool = new Pool({
-  connectionString: process.env.DATABASE_URL,
-  ssl: {
-    rejectUnauthorized: false
-  },
-  idleTimeoutMillis: 30000,
-  connectionTimeoutMillis: 5000
-});
-
-// Función de query con mejor manejo de errores
+// Added for troubleshooting queries
+// during development
 module.exports = {
   async query(text, params) {
-    const start = Date.now();
     try {
-      const res = await pool.query(text, params);
-      const duration = Date.now() - start;
-      console.log('Query executed', { text, duration, rows: res.rowCount });
-      return res;
+      const res = await pool.query(text, params)
+      console.log("executed query", { text })
+      return res
     } catch (error) {
-      console.error('Error in query', { 
-        text, 
-        params, 
-        error: error.message,
-        stack: error.stack 
-      });
-      throw new Error(`Database error: ${error.message}`);
+      console.error("error in query", { text })
+      throw error
     }
   },
-  
-  // Para cerrar la conexión cuando sea necesario
-  async close() {
-    await pool.end();
-  }
-};
+}
+} else {
+  pool = new Pool({
+    connectionString: process.env.DATABASE_URL,
+  })
+  module.exports = pool
+}
