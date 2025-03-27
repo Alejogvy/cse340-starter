@@ -126,7 +126,7 @@ app.use(async (err, req, res, next) => {
  * Server host name and port
  * *****************************************/
 const PORT = process.env.PORT || 5500;
-const HOST = process.env.HOST || 'localhost';
+const HOST = '0.0.0.0';
 
 /* ***********************
  * Log statement to confirm server operation
