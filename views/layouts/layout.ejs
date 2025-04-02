@@ -7,6 +7,15 @@
             <%- include('../partials/header') %>
             <%- include('../partials/navigation') %>
 
+            <!-- Mensajes flash -->
+            <% if (messages.success) { %>
+                <p class="success-message"><%= messages.success %></p>
+            <% } %>
+
+            <% if (messages.error) { %>
+                <p class="error-message"><%= messages.error %></p>
+            <% } %>
+
             <main>
                 <%- body %>
             </main>

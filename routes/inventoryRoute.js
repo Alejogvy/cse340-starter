@@ -1,14 +1,26 @@
 const express = require('express');
 const router = express.Router();
 const invController = require('../controllers/invController');
+const invValidation = require('../utilities/inventory-validation');
 
-// Route to build inventory by classification view
-router.get('/type/:classificationId', invController.buildByClassificationId);
+// We use invController to access the functions
+router.get("/", invController.showManagementView);
 
-// Route to build vehicle detail view
+router.get("/type/:classificationId", invController.buildByClassificationId);
+
 router.get('/detail/:invId', invController.getVehicleDetail);
 
-// Test route for 500 error simulation
+router.get('/add-classification', invController.showAddClassificationForm);
+
+router.post('/add-classification', invValidation.checkClassification, invController.addClassification);
+
+// Path to display the form
+router.get("/add-inventory", invController.showAddInventoryForm);
+
+// Route to process the form
+router.post("/add-inventory", invController.processAddInventoryForm);
+
+// Test route to simulate a 500 error
 router.get("/test-error", (req, res, next) => {
   const error = new Error("Test Error 500");
   error.status = 500;

@@ -1,11 +1,38 @@
+const invCont = require("../controllers/invController");
 const invModel = require("../models/inventory-model");
-const Util = {}
 const getImageName = (path) => path.split('/').pop();
+const utilities = require("../utilities/");
+
+
+/*********************************************************
+ * Build an HTML dropdown list of vehicle classifications
+ ******************************************************* */
+utilities.buildClassificationList = async (selectedId = null) => {
+  const data = await invModel.getClassifications();
+  let classificationList = '<select name="classification_id" id="classificationList" required>';
+  classificationList += "<option value=''>Choose a Classification</option>";
+
+  data.rows.forEach((row) => {
+    classificationList += `<option value="${row.classification_id}" ${selectedId == row.classification_id ? "selected" : ""}>${row.classification_name}</option>`;
+  });
+
+  classificationList += "</select>";
+  return classificationList;
+};
+
+/****************************************************
+ * Middleware for handling errors in async functions
+ *************************************************** */
+utilities.handleErrors = function (fn) {
+  return function (req, res, next) {
+    Promise.resolve(fn(req, res, next)).catch(next);
+  };
+};
 
 /******************************************
  * Builds the vehicle detail HTML structure
  *****************************************/
-Util.buildVehicleDetailHTML = function (vehicle) {
+utilities.buildVehicleDetailHTML = function (vehicle) {
   const imageName = getImageName(vehicle.inv_image);
   const price = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -40,7 +67,7 @@ Util.buildVehicleDetailHTML = function (vehicle) {
 /************************************************
  * Constructs the navigation HTML unordered list
  **********************************************/
-Util.getNav = async function () {
+utilities.getNav = async function () {
   try {
     const { rows } = await invModel.getClassifications();
     
@@ -90,7 +117,7 @@ Util.getNav = async function () {
 /*************************************
  * Builds the classification grid HTML
  *************************************/
-Util.buildClassificationGrid = function (data) {
+utilities.buildClassificationGrid = function (data) {
   const vehicles = Array.isArray(data) ? data : (data.rows || []);
   
   if (vehicles.length > 0) {
@@ -121,4 +148,4 @@ Util.buildClassificationGrid = function (data) {
   }
 };
 
-module.exports = Util;
+module.exports = utilities;

@@ -1,0 +1,56 @@
+<%- include('../partials/header') %>
+<%- include('../partials/head') %>
+
+<h1><%= title %></h1>
+
+<% if (messages && messages.notice) { %>
+  <p class="flash-message"><%= messages.notice %></p>
+<% } %>
+
+<% if (errors && errors.length > 0) { %>
+  <div class="error-messages">
+    <ul>
+      <% errors.forEach(function(error) { %>
+        <li><%= error %></li>
+      <% }); %>
+    </ul>
+  </div>
+<% } %>
+
+<form id="loginForm" action="/account/login" method="post">
+  <label for="account_email">Email:</label>
+  <input type="email" name="account_email" id="accountEmail" required value="<%= locals.account_email %>">
+
+  <label for="account_password">Password:</label>
+  <input type="password" name="account_password" id="accountPassword" required>
+
+  <button type="submit">Login</button>
+</form>
+
+<script>
+  const loginForm = document.getElementById("loginForm");
+
+  loginForm.addEventListener("submit", function (event) {
+    const email = document.getElementById("accountEmail").value;
+    const password = document.getElementById("accountPassword").value;
+    
+    // Validate the email
+    const emailRegex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+    if (!emailRegex.test(email)) {
+      alert("Please enter a valid email address.");
+      event.preventDefault();
+      return;
+    }
+
+    // Validate the password
+    if (password.length < 8) {
+      alert("Password must be at least 8 characters long.");
+      event.preventDefault();
+    }
+  });
+</script>
+
+
+<p>Don't have an account? <a href="/account/register">Register here</a></p>
+
+<%- include('../partials/footer') %>

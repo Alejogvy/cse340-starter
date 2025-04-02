@@ -1,5 +1,5 @@
 /* ******************************************
- * Application Server
+ * Require Statements
  * ******************************************/
 const express = require("express");
 const app = express();
@@ -11,32 +11,71 @@ const static = require("./routes/static");
 const inventoryRoute = require("./routes/inventoryRoute");
 const utilities = require("./utilities");
 const db = require("./database/index");
+const session = require("express-session");
+const pool = require('./database/');
+require('dotenv').config();
+const flash = require('connect-flash');
+const accountRoute = require("./routes/accountRoute");
+const bodyParser = require("body-parser");
+
+
+/* ***********************
+ * Middleware
+ *************************/
+app.use(bodyParser.json());
+app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+
+/* ***********************
+ * Session Middleware
+ *************************/
+app.use(session({
+  store: new (require('connect-pg-simple')(session))({
+    pool,
+    createTableIfMissing: true,
+    pruneSessionInterval: 60 * 60 * 1000, // Clean every 1 hour
+  }),
+  secret: process.env.SESSION_SECRET,
+  resave: false,
+  saveUninitialized: false,
+  name: 'sessionId',
+  cookie: { maxAge: 1000 * 60 * 60 * 24 } // 1 day
+}));
+
+/* *********************************************************
+ * Global Middleware for passing Flash messages to all views
+ ********************************************************** */
+app.use(flash());
+app.use((req, res, next) => {
+  res.locals.messages = req.flash();
+  next();
+});
 
 /* ***********************
  * Serve static files
  *************************/
 app.use(express.static("public"));
 
-/* ***********************
+/* **************
  * Index Route
- *************************/
+ *****************/
 app.get("/", baseController.buildHome)
 
-/* ***********************
+/* ***********************************
  * Middleware for Parsing JSON & Forms
- *************************/
+ ************************************ */
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-/* ***********************
+/* ************
  * Routes
- *************************/
+ **************/
 app.use(static);
 app.use("/inv", inventoryRoute);
+app.use("/account", accountRoute);
 
-/* ******************************************
+/* ******************
  * Default GET route
- * ***************************************** */
+ * ***************** */
 app.get("/", async (req, res) => {
   try {
     let nav = await utilities.getNav();
@@ -47,24 +86,27 @@ app.get("/", async (req, res) => {
   }
 });
 
-/* ***********************
+/* **************************
  * View Engine and Templates
- *************************/
+ ************************** */
 app.set("view engine", "ejs");
 app.use(expressLayouts);
 app.set("layout", "./layouts/layout");
 
-/* ******************************************
+/* ********************************
  * Database Connection Test
- * *****************************************/
+ * ****************************** */
 db.query('SELECT NOW()')
   .then(() => console.log('✅ Database connected successfully'))
-  .catch(err => console.error('❌ Database connection error:', err));
+  .catch(err => {
+    console.error('❌ Database connection failed:', err.message);
+    console.error('Stack Trace:', err.stack);
+  });
 
-/* ***********************
+/* **********************************
  * Express Error Handler
  * Place after all other middleware
- *************************/
+ ************************************/
 // Test Error Route (for development/testing)
 app.get("/trigger-error", async (req, res, next) => {
   try {
@@ -120,7 +162,6 @@ app.use(async (err, req, res, next) => {
     error: process.env.NODE_ENV === 'development' ? err : null
   });
 });
-
 
 /* ******************************************
  * Server host name and port
