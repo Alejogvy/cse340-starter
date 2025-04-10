@@ -1,0 +1,37 @@
+<%- include('../partials/head', { title }) %>
+<body>
+  <main class="container">
+    <h1><%= title %></h1>
+    <p>Confirm Deletion - The delete is permanent.</p>
+
+    <% if (errors) { %>
+      <div class="errors">
+        <ul>
+          <% errors.forEach(error => { %>
+            <li><%= error.msg %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form action="/inv/delete" method="post">
+      <label for="inv_make">Make</label>
+      <input type="text" id="inv_make" name="inv_make" value="<%= inv_make %>" readonly>
+
+      <label for="inv_model">Model</label>
+      <input type="text" id="inv_model" name="inv_model" value="<%= inv_model %>" readonly>
+
+      <label for="inv_year">Year</label>
+      <input type="text" id="inv_year" name="inv_year" value="<%= inv_year %>" readonly>
+
+      <label for="inv_price">Price</label>
+      <input type="text" id="inv_price" name="inv_price" value="$<%= inv_price %>" readonly>
+
+      <input type="hidden" name="inv_id" value="<%= inv_id %>">
+
+      <button type="submit">Delete</button>
+    </form>
+  </main>
+  <%- include('../partials/footer') %>
+</body>
+</html>

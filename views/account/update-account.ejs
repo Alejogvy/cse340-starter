@@ -1,0 +1,58 @@
+<%- include('../partials/head', { title: 'Update Account Information' }) %>
+<body>
+  <%- include('../partials/header') %>
+  <%- include('../partials/navigation', { nav }) %>
+
+  <main class="container">
+    <h1>Update Account Information</h1>
+
+    <% if (errors && errors.length > 0) { %>
+      <div class="errors">
+        <ul>
+          <% errors.forEach(function(error){ %>
+            <li><%= error %></li>
+          <% }) %>
+        </ul>
+      </div>
+    <% } %>
+
+    <form action="/account/update" method="post">
+      <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+
+      <div class="form-group">
+        <label for="account_firstname">First Name:</label>
+        <input type="text" id="account_firstname" name="account_firstname" required value="<%= accountData.account_firstname %>">
+      </div>
+
+      <div class="form-group">
+        <label for="account_lastname">Last Name:</label>
+        <input type="text" id="account_lastname" name="account_lastname" required value="<%= accountData.account_lastname %>">
+      </div>
+
+      <div class="form-group">
+        <label for="account_email">Email:</label>
+        <input type="hidden" name="current_account_email" value="<%= accountData.account_email %>">
+        <input type="email" id="account_email" name="account_email" required value="<%= accountData.account_email %>">
+      </div>
+
+      <button type="submit">Update Account</button>
+    </form>
+
+    <hr>
+
+    <form action="/account/updatePassword" method="post">
+      <input type="hidden" name="account_id" value="<%= accountData.account_id %>">
+
+      <div class="form-group">
+        <label for="new_password">New Password:</label>
+        <input type="password" id="new_password" name="new_password" required>
+        <small>Password must be at least 12 characters, and include at least 1 uppercase letter, 1 number, and 1 symbol.</small>
+      </div>
+
+      <button type="submit">Change Password</button>
+    </form>
+  </main>
+
+  <%- include('../partials/footer') %>
+</body>
+</html>

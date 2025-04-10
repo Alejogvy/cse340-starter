@@ -524,6 +524,161 @@ a:hover {
   text-align: center;
 }
 
+/* Account Management Styles */
+.account-management {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 20px;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+}
+
+.account-management h1 {
+  color: #2c3e50;
+  border-bottom: 2px solid #00bcd4;
+  padding-bottom: 10px;
+  margin-bottom: 20px;
+}
+
+.flash-message {
+  padding: 10px 15px;
+  margin-bottom: 20px;
+  background-color: #dff0d8;
+  color: #3c763d;
+  border: 1px solid #d6e9c6;
+  border-radius: 4px;
+}
+
+/* General style of content */
+main {
+  max-width: 1100px;
+  margin: 2rem auto;
+  padding: 1rem 2rem;
+  background-color: #fff;
+  box-shadow: 0 2px 12px rgba(0, 0, 0, 0.05);
+  border-radius: 10px;
+}
+
+/* Titles */
+main h1 {
+  font-size: 2rem;
+  color: #003366;
+  border-bottom: 2px solid #00bcd4;
+  padding-bottom: 0.5rem;
+  margin-bottom: 1rem;
+}
+
+main h2 {
+  font-size: 1.5rem;
+  margin-top: 2rem;
+  color: #333;
+}
+
+/* Flash messages*/
+.messages {
+  background-color: #e0f7fa;
+  padding: 1rem;
+  border-left: 4px solid #00796b;
+  margin-bottom: 1rem;
+  border-radius: 4px;
+}
+
+.flash-message {
+  color: #004d40;
+  margin: 0;
+}
+
+/* Links to add */
+.manage-inventory ul {
+  list-style: none;
+  padding: 0;
+  margin-bottom: 2rem;
+  display: flex;
+  gap: 1rem;
+}
+
+.manage-inventory li a {
+  display: inline-block;
+  background-color: #007acc;
+  color: white;
+  padding: 0.5rem 1rem;
+  text-decoration: none;
+  border-radius: 5px;
+  transition: background-color 0.3s;
+}
+
+.manage-inventory ul li a:hover {
+  background-color: #005fa3;
+}
+
+/* Sort selector */
+#classificationList {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  border-radius: 10px;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  width: 100%;
+  max-width: 400px;
+}
+
+/* Responsive Design */
+@media screen and (min-width: 600px) {
+  #classificationList {
+    margin: 5rem 0;
+  }
+
+/* Inventory table */
+#inventoryDisplay {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.5rem;
+  font-family: Arial, sans-serif;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+#inventoryDisplay thead {
+  background-color: #003366;
+  color: white;
+}
+
+#inventoryDisplay th,
+#inventoryDisplay td {
+  padding: 0.75rem;
+  text-align: left;
+  border-bottom: 1px solid #ccc;
+}
+
+#inventoryDisplay tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
+
+/* Links within the table */
+#inventoryDisplay a {
+  color: #007acc;
+  text-decoration: none;
+}
+
+#inventoryDisplay a:hover {
+  text-decoration: underline;
+}
+
+/* NoScript mensaje */
+noscript {
+  display: block;
+  margin-top: 2rem;
+  background-color: #ffe0e0;
+  padding: 1rem;
+  border-left: 4px solid red;
+  color: #900;
+  font-weight: bold;
+}
+
+.inventory-controls {
+  margin-top: 1rem;
+}
+
 /* Style for the registration form */
 form {
   max-width: 400px;
@@ -779,3 +934,4 @@ a:hover {
   .upgrade-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+}

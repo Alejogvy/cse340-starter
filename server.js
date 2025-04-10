@@ -13,17 +13,27 @@ const utilities = require("./utilities");
 const db = require("./database/index");
 const session = require("express-session");
 const pool = require('./database/');
-require('dotenv').config();
 const flash = require('connect-flash');
 const accountRoute = require("./routes/accountRoute");
 const bodyParser = require("body-parser");
-
+const cookieParser = require("cookie-parser");
 
 /* ***********************
  * Middleware
  *************************/
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: true })); // for parsing application/x-www-form-urlencoded
+app.use(cookieParser());
+
+/* ***********************
+ * Configuración de sesiones
+ *************************/
+app.use(utilities.checkJWTToken);
+app.use(utilities.handleJWTHeader);
+
+/* ***********************************
+ * Middleware for Parsing JSON & Forms
+ ************************************ */
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 /* ***********************
  * Session Middleware
@@ -58,13 +68,7 @@ app.use(express.static("public"));
 /* **************
  * Index Route
  *****************/
-app.get("/", baseController.buildHome)
-
-/* ***********************************
- * Middleware for Parsing JSON & Forms
- ************************************ */
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.get("/", baseController.buildHome);
 
 /* ************
  * Routes
@@ -169,9 +173,9 @@ app.use(async (err, req, res, next) => {
 const PORT = process.env.PORT || 5500;
 const HOST = '0.0.0.0';
 
-/* ***********************
+/* ******************************************
  * Log statement to confirm server operation
- * *********************** */
+ * **************************************** */
 app.listen(PORT, HOST, () => {
   console.log(`🚀 Server running at http://${HOST}:${PORT}`);
   console.log(`🌍 Environment: ${process.env.NODE_ENV || 'development'}`);

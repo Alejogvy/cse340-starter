@@ -3,20 +3,38 @@
 <%- include('../partials/navigation') %>
 
 <main>
-    <h1>Inventory Management</h1>
+  <h1>Inventory Management</h1>
 
-    <% if (messages && messages.length > 0) { %>
-        <div class="messages">
-            <% messages.forEach(message => { %>
-                <p class="flash-message"><%= message %></p>
-            <% }) %>
-        </div>
-    <% } %>
+  <% if (messages && messages.length > 0) { %>
+    <div class="messages">
+      <% messages.forEach(message => { %>
+        <p class="flash-message"><%= message %></p>
+      <% }) %>
+    </div>
+  <% } %>
 
-    <ul>
-        <li><a href="/inv/add-classification">Add New Classification</a></li>
-        <li><a href="/inv/add-inventory">Add New Inventory</a></li>
-    </ul>
+  <div class="manage-inventory">
+  <ul>
+    <li><a href="/inv/add-classification">Add New Classification</a></li>
+    <li><a href="/inv/add-inventory">Add New Inventory</a></li>
+  </ul>
+
+    <h2>Manage Inventory</h2>
+    <p>Select a classification from the list to see the items belonging to it.</p>
+  </div>
+
+
+  <div class="inventory-controls">
+    <%- classificationSelect %>
+    <table id="inventoryDisplay"></table>
+  </div>
+
+  <table id="inventoryDisplay"></table>
+
+  <noscript>JavaScript must be enabled to use this page.</noscript>
+
 </main>
+
+<script src="../js/inventory.js"></script>
 
 <%- include('../partials/footer') %>

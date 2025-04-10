@@ -1,13 +1,12 @@
-const invCont = require("../controllers/invController");
+const jwt = require("jsonwebtoken");
+require("dotenv").config();
 const invModel = require("../models/inventory-model");
 const getImageName = (path) => path.split('/').pop();
-const utilities = require("../utilities/");
-
 
 /*********************************************************
  * Build an HTML dropdown list of vehicle classifications
- ******************************************************* */
-utilities.buildClassificationList = async (selectedId = null) => {
+ *******************************************************/
+const buildClassificationList = async (selectedId = null) => {
   const data = await invModel.getClassifications();
   let classificationList = '<select name="classification_id" id="classificationList" required>';
   classificationList += "<option value=''>Choose a Classification</option>";
@@ -22,8 +21,8 @@ utilities.buildClassificationList = async (selectedId = null) => {
 
 /****************************************************
  * Middleware for handling errors in async functions
- *************************************************** */
-utilities.handleErrors = function (fn) {
+ ***************************************************/
+const handleErrors = function (fn) {
   return function (req, res, next) {
     Promise.resolve(fn(req, res, next)).catch(next);
   };
@@ -31,8 +30,8 @@ utilities.handleErrors = function (fn) {
 
 /******************************************
  * Builds the vehicle detail HTML structure
- *****************************************/
-utilities.buildVehicleDetailHTML = function (vehicle) {
+ ******************************************/
+const buildVehicleDetailHTML = function (vehicle) {
   const imageName = getImageName(vehicle.inv_image);
   const price = new Intl.NumberFormat('en-US', {
     style: 'currency',
@@ -43,21 +42,19 @@ utilities.buildVehicleDetailHTML = function (vehicle) {
 
   return `
     <div class="vehicle-detail">
-        <img src="/images/vehicles/${imageName}" 
-             alt="${vehicle.inv_make} ${vehicle.inv_model}">
-    <div class="vehicle-detail">
-      <img src="/images/vehicles/${vehicle.inv_image}" 
-           alt="${vehicle.inv_make} ${vehicle.inv_model}" 
-           class="vehicle-image">
-      <div class="vehicle-info">
-        <h2>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h2>
-        <div class="vehicle-specs">
-          <p><span class="label">Price:</span> <span class="price">${price}</span></p>
-          <p><span class="label">Miles:</span> <span class="miles">${miles}</span></p>
-          <p><span class="label">Color:</span> ${vehicle.inv_color}</p>
-        </div>
-        <div class="vehicle-description">
-          ${vehicle.inv_description}
+      <img src="/images/vehicles/${imageName}" alt="${vehicle.inv_make} ${vehicle.inv_model}">
+      <div class="vehicle-detail">
+        <img src="/images/vehicles/${vehicle.inv_image}" alt="${vehicle.inv_make} ${vehicle.inv_model}" class="vehicle-image">
+        <div class="vehicle-info">
+          <h2>${vehicle.inv_year} ${vehicle.inv_make} ${vehicle.inv_model}</h2>
+          <div class="vehicle-specs">
+            <p><span class="label">Price:</span> <span class="price">${price}</span></p>
+            <p><span class="label">Miles:</span> <span class="miles">${miles}</span></p>
+            <p><span class="label">Color:</span> ${vehicle.inv_color}</p>
+          </div>
+          <div class="vehicle-description">
+            ${vehicle.inv_description}
+          </div>
         </div>
       </div>
     </div>
@@ -66,11 +63,11 @@ utilities.buildVehicleDetailHTML = function (vehicle) {
 
 /************************************************
  * Constructs the navigation HTML unordered list
- **********************************************/
-utilities.getNav = async function () {
+ ***********************************************/
+const getNav = async function () {
   try {
     const { rows } = await invModel.getClassifications();
-    
+
     if (!rows || rows.length === 0) {
       console.warn("No classifications found in database");
       return `
@@ -91,7 +88,7 @@ utilities.getNav = async function () {
       navHTML += `
         <li class="nav-item">
           <a href="/inv/type/${row.classification_id}" 
-             title="Browse our ${row.classification_name} vehicles"
+             title="Browse our ${row.classification_name} vehicles" 
              class="nav-link">
             ${row.classification_name}
           </a>
@@ -117,12 +114,12 @@ utilities.getNav = async function () {
 /*************************************
  * Builds the classification grid HTML
  *************************************/
-utilities.buildClassificationGrid = function (data) {
+const buildClassificationGrid = function (data) {
   const vehicles = Array.isArray(data) ? data : (data.rows || []);
-  
+
   if (vehicles.length > 0) {
     let grid = '<ul id="inv-display">';
-    
+
     vehicles.forEach((vehicle) => {
       grid += `
         <li>
@@ -136,11 +133,11 @@ utilities.buildClassificationGrid = function (data) {
                 ${vehicle.inv_make} ${vehicle.inv_model}
               </a>
             </h2>
-            <span>${vehicle.inv_price.toLocaleString('en-US', {style: 'currency', currency: 'USD'})}</span>
+            <span>${vehicle.inv_price.toLocaleString('en-US', { style: 'currency', currency: 'USD' })}</span>
           </div>
         </li>`;
     });
-    
+
     grid += '</ul>';
     return grid;
   } else {
@@ -148,4 +145,80 @@ utilities.buildClassificationGrid = function (data) {
   }
 };
 
-module.exports = utilities;
+/* ****************************************
+ * Middleware to check token validity using JWT
+ *****************************************/
+const checkJWTToken = (req, res, next) => {
+  if (req.cookies && req.cookies.jwt) {
+    jwt.verify(
+      req.cookies.jwt,
+      process.env.ACCESS_TOKEN_SECRET,
+      (err, accountData) => {
+        if (err) {
+          req.flash("notice", "Please log in");
+          res.clearCookie("jwt");
+          return res.redirect("/account/login");
+        }
+        res.locals.accountData = accountData;
+        res.locals.loggedin = 1;
+        next();
+      }
+    );
+  } else {
+    next();
+  }
+};
+
+function handleJWTHeader(req, res, next) {
+  const token = req.cookies && req.cookies.jwt;
+  if (token) {
+    try {
+      const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+      res.locals.loggedin = true;
+      res.locals.accountData = decoded;
+    } catch (error) {
+      res.locals.loggedin = false;
+      res.locals.accountData = null;
+      res.clearCookie("jwt");
+    }
+  } else {
+    res.locals.loggedin = false;
+    res.locals.accountData = null;
+  }
+  next();
+};
+
+/*************************************
+ * Middleware to check login status
+ *************************************/
+function checkLogin(req, res, next) {
+  const token = req.cookies && req.cookies.jwt;
+  if (!token) {
+    req.flash('notice', 'Please log in to access this page.');
+    return res.redirect('/account/login');
+  }
+
+  try {
+    const decoded = jwt.verify(token, process.env.ACCESS_TOKEN_SECRET);
+    res.locals.loggedin = true;
+    res.locals.accountData = decoded;
+    next();
+  } catch (error) {
+    console.error("JWT verification error:", error);
+    res.locals.loggedin = false;
+    req.flash('notice', 'Please log in again.');
+    res.clearCookie('jwt');
+    return res.redirect('/account/login');
+  }
+};
+
+module.exports = {
+  buildClassificationList,
+  handleErrors,
+  buildVehicleDetailHTML,
+  getNav,
+  buildClassificationGrid,
+  checkJWTToken,
+  handleJWTHeader,
+  checkLogin
+};

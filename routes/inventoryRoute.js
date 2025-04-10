@@ -1,26 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const invController = require('../controllers/invController');
-const invValidation = require('../utilities/inventory-validation');
+const invVal = require("../utilities/inventory-validation");
+const utilities = require("../utilities");
+const { requireAdminOrEmployee } = require("../utilities/auth");
 
-// We use invController to access the functions
 router.get("/", invController.showManagementView);
-
 router.get("/type/:classificationId", invController.buildByClassificationId);
-
 router.get('/detail/:invId', invController.getVehicleDetail);
 
+// Classification
 router.get('/add-classification', invController.showAddClassificationForm);
+router.post('/add-classification', invVal.checkClassification, invController.addClassification);
 
-router.post('/add-classification', invValidation.checkClassification, invController.addClassification);
+// New inventory
+router.get("/add-inventory", requireAdminOrEmployee, invController.showAddInventoryForm);
+router.post("/add-inventory", requireAdminOrEmployee, invVal.newInventoryRules(), invVal.checkInventoryData, invController.processAddInventoryForm);
 
-// Path to display the form
-router.get("/add-inventory", invController.showAddInventoryForm);
+// Edition
+router.get("/edit/:inv_id", utilities.handleErrors(invController.editInventoryView));
+router.post("/update", invVal.newInventoryRules(), invVal.checkUpdateData, invController.updateInventory);
 
-// Route to process the form
-router.post("/add-inventory", invController.processAddInventoryForm);
+// JSON for AJAX
+router.get("/getInventory/:classification_id", utilities.handleErrors(invController.getInventoryJSON));
 
-// Test route to simulate a 500 error
+// Show delete confirmation view
+router.get("/delete/:inv_id", invController.buildDeleteInventoryView);
+
+// Process deletion
+router.post("/delete", invController.deleteInventoryItem);
+
+// Test Error
 router.get("/test-error", (req, res, next) => {
   const error = new Error("Test Error 500");
   error.status = 500;
