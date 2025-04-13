@@ -30,6 +30,12 @@
         <p class="description">
           <%= vehicle.inv_description %>
         </p>
+        <section class="vehicle-details">
+        
+          <div class="review-link">
+            <a href="/inv/<%= vehicle.inv_id %>/reviews" class="button">📝 Read or Write Reviews</a>
+          </div>
+        </section>        
       </div>
     <% } else { %>
       <p class="error">Vehicle not found</p>

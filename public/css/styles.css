@@ -550,6 +550,38 @@ a:hover {
   border-radius: 4px;
 }
 
+.review-link {
+  margin-top: 1em;
+  text-align: center;
+}
+.review-link .button {
+  display: inline-block;
+  padding: 0.5em 1em;
+  background-color: #004080;
+  color: white;
+  text-decoration: none;
+  border-radius: 5px;
+}
+.review-link .button:hover {
+  background-color: #0059b3;
+}
+
+.reviews ul {
+  list-style: none;
+  padding: 0;
+}
+
+.reviews li {
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 1em;
+  padding-bottom: 1em;
+}
+
+.errors {
+  color: red;
+  list-style: square;
+}
+
 /* General style of content */
 main {
   max-width: 1100px;

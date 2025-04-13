@@ -1,0 +1,68 @@
+<%- include('../partials/head') %>
+<%- include('../partials/header') %>
+<%- include('../partials/navigation') %>
+
+<main>
+  <h1><%= title %></h1>
+
+  <section class="vehicle-info">
+    <h2><%= vehicle.inv_make %> <%= vehicle.inv_model %> - <%= vehicle.inv_year %></h2>
+    <img src="<%= vehicle.inv_image %>" alt="Image of <%= vehicle.inv_make %> <%= vehicle.inv_model %>">
+    <p><strong>Description:</strong> <%= vehicle.inv_description %></p>
+    <p><strong>Price:</strong> $<%= vehicle.inv_price %></p>
+    <p><strong>Miles:</strong> <%= vehicle.inv_miles %> mi</p>
+    <p><strong>Color:</strong> <%= vehicle.inv_color %></p>
+  </section>
+
+  <section class="reviews">
+    <h2>Reviews</h2>
+
+    <% if (reviews.length === 0) { %>
+      <p>No reviews yet. Be the first to leave one!</p>
+    <% } else { %>
+      <ul>
+        <% reviews.forEach(review => { %>
+          <li>
+            <p><strong><%= review.reviewer_name %></strong> rated it <%= review.rating %>/5</p>
+            <p><%= review.review_content %></p>
+            <p><em><%= review.formatted_date %></em></p>
+          </li>
+        <% }) %>
+      </ul>
+    <% } %>
+  </section>
+
+  <section class="add-review">
+    <h2>Leave a Review</h2>
+
+    <% if (errors && errors.length > 0) { %>
+      <ul class="errors">
+        <% errors.forEach(error => { %>
+          <li><%= error %></li>
+        <% }) %>
+      </ul>
+    <% } %>
+
+    <form method="post" action="/inv/<%= vehicle.inv_id %>/reviews">
+      <input type="hidden" name="inv_id" value="<%= vehicle.inv_id %>">
+
+      <label for="reviewer_name">Your Name</label>
+      <input type="text" id="reviewer_name" name="reviewer_name" required>
+
+      <label for="review_content">Your Review</label>
+      <textarea id="review_content" name="review_content" rows="4" required></textarea>
+
+      <label for="rating">Rating</label>
+      <select id="rating" name="rating" required>
+        <option value="">--Select--</option>
+        <% for(let i = 1; i <= 5; i++) { %>
+          <option value="<%= i %>"><%= i %></option>
+        <% } %>
+      </select>
+
+      <button type="submit">Submit Review</button>
+    </form>
+  </section>
+</main>
+
+<%- include('../partials/footer') %>

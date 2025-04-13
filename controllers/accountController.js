@@ -147,8 +147,8 @@ async function buildAccountManagement(req, res) {
       title: "Account Management",
       nav,
       message: req.flash('notice'),
-      account_firstname: accountData ? accountData.account_firstname : "",
-      errors: null
+      accountData,
+      errors: null,
     });
   } catch (error) {
     console.error("Error building account management view:", error);

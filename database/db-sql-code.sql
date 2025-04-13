@@ -69,6 +69,16 @@ ALTER TABLE "session" ADD CONSTRAINT "session_pkey" PRIMARY KEY ("sid") NOT DEFE
 
 CREATE INDEX "IDX_session_expire" ON "session" ("expire");
 
+--Comments table
+CREATE TABLE reviews (
+  review_id SERIAL PRIMARY KEY,
+  inv_id INTEGER NOT NULL REFERENCES inventory(inv_id) ON DELETE CASCADE,
+  reviewer_name TEXT NOT NULL,
+  review_content TEXT NOT NULL,
+  rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+  review_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 -- Data for table `inventory`
 
 INSERT INTO public.inventory (

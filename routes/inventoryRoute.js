@@ -2,6 +2,8 @@ const express = require('express');
 const router = express.Router();
 const invController = require('../controllers/invController');
 const invVal = require("../utilities/inventory-validation");
+const reviewController = require("../controllers/reviewController");
+const { reviewRules, checkReviewData } = require("../utilities/review-validation");
 const utilities = require("../utilities");
 const { requireAdminOrEmployee } = require("../utilities/auth");
 
@@ -29,6 +31,10 @@ router.get("/delete/:inv_id", invController.buildDeleteInventoryView);
 
 // Process deletion
 router.post("/delete", invController.deleteInventoryItem);
+
+// Show review
+router.get("/:inv_id/reviews", reviewController.showReviewForm);
+router.post("/:inv_id/reviews", reviewRules(), checkReviewData, reviewController.submitReview);
 
 // Test Error
 router.get("/test-error", (req, res, next) => {

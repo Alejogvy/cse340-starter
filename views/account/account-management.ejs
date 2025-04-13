@@ -12,11 +12,11 @@
           <% }) %>
         </div>
       <% } %>
-
-      <% if (locals.accountData && locals.accountData.account_type === "Client") { %>
-        <h2>Welcome Basic, <%= locals.accountData.account_firstname %>!</h2>
-      <% } else if (locals.accountData && (locals.accountData.account_type === "Employee" || locals.accountData.account_type === "Admin")) { %>
-        <h2>Welcome Happy, <%= locals.accountData.account_firstname %>!</h2>
+      
+      <% if (accountData && accountData.account_type === "Client") { %>
+        <p>Welcome back <%= accountData.account_firstname %>!</p>
+      <% } else if (accountData && (accountData.account_type === "Employee" || accountData.account_type === "Admin")) { %>
+        <h2>Welcome back,<%= accountData.account_firstname %> <%= accountData.account_type %>!</h2>
         <h3>Inventory Management</h3>
         <p><a href="/inv">Go to Inventory Management</a></p>
       <% } %>
